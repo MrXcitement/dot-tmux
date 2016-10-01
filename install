@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# install -- make symbolic links in the users home directory
+# Mike Barker <mike@thebarkers.com>
+# May 14th, 2013
+
+# 2016.10.01 MRB
+# Modified to install tmux config file
+
+# Create a symbolic link, backing up any files that exist
+link() {
+	local src=$1
+	local dst=$2
+	echo "Linking ${dst} to ${src} ..."
+	if [ -a ${dst} ]; then
+		if ! [ -h ${dst} ]; then
+			echo "Backing up ${dst} to ${dst}.backup"
+			mv ${dst} ${dst}.backup
+		fi
+	fi
+	ln -fsvn ${src} ${dst}
+}
+
+# Get the current working directory
+CWD="$(cd "$(dirname "$0")" && pwd)"
+
+# Link the tmux configuration file
+echo "Make sympolic links in the users home directory to the tmux config files and directories"
+link ${CWD}/tmux ${HOME}/.tmux
