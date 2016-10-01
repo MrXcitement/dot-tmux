@@ -1,9 +1,9 @@
-*TMUX Configuration
-** My personalized tmux configuration
+#TMUX Configuration
+## My personalized tmux configuration
 
-**Installation
-'''
+##Installation
+```
 git clone https://github.com/mrxcitement/dot-tmux
 ./install
-'''
+```
 
