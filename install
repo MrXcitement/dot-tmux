@@ -26,4 +26,4 @@ CWD="$(cd "$(dirname "$0")" && pwd)"
 
 # Link the tmux configuration file
 echo "Make sympolic links in the users home directory to the tmux config files and directories"
-link ${CWD}/tmux ${HOME}/.tmux
+link ${CWD}/tmux.conf ${HOME}/.tmux.conf
