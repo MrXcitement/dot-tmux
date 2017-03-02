@@ -7,23 +7,31 @@
 # 2016.10.01 MRB
 # Modified to install tmux config file
 
-# Create a symbolic link, backing up any files that exist
-link() {
-	local src=$1
-	local dst=$2
-	echo "Linking ${dst} to ${src} ..."
-	if [ -a ${dst} ]; then
-		if ! [ -h ${dst} ]; then
-			echo "Backing up ${dst} to ${dst}.backup"
-			mv ${dst} ${dst}.backup
+# Backup a file if it exists
+function backup {
+	local file=$1
+	if [ -a ${file} ]; then
+		if ! [ -h ${file} ]; then
+			echo "Backing up ${file} to ${file}.backup"
+			mv ${file} ${file}.backup
 		fi
 	fi
-	ln -fsvn ${src} ${dst}
+}
+# Link the file
+function link {
+    local src=$1
+    local dst=$2
+    if ! [ -h ${dst} ]; then
+        echo "Linking file ${dst}"
+        ln -sv ${src} ${dst}
+    fi
 }
 
 # Get the current working directory
 CWD="$(cd "$(dirname "$0")" && pwd)"
 
+# Backup an existing tmux configuraion file
+backup "${HOME}/.tmux.conf"
+
 # Link the tmux configuration file
-echo "Make sympolic links in the users home directory to the tmux config files and directories"
-link ${CWD}/tmux.conf ${HOME}/.tmux.conf
+link "${CWD}/tmux.conf" "${HOME}/.tmux.conf"
