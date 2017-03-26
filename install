@@ -30,8 +30,12 @@ function link {
 # Get the current working directory
 CWD="$(cd "$(dirname "$0")" && pwd)"
 
-# Backup an existing tmux configuraion file
-backup "${HOME}/.tmux.conf"
+# install tmux.conf tmux-darwin.conf files
+for file in tmux.conf tmux-darwin.conf
+do
+    # Backup an existing tmux configuraion file
+    backup "${HOME}/.${file}"
 
-# Link the tmux configuration file
-link "${CWD}/tmux.conf" "${HOME}/.tmux.conf"
+    # Link the tmux configuration file
+    link "${CWD}/${file}" "${HOME}/.${file}"
+done
