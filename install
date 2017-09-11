@@ -7,35 +7,43 @@
 # 2016.10.01 MRB
 # Modified to install tmux config file
 
+# list of files and or directories to install
+file_list=".tmux.conf .tmux-darwin.conf"
+
+# Get the current working directory
+cwd="$(cd "$(dirname "$0")" && pwd)"
+
 # Backup a file if it exists
-function backup {
+backup() {
 	local file=$1
-	if [ -a ${file} ]; then
-		if ! [ -h ${file} ]; then
-			echo "Backing up ${file} to ${file}.backup"
-			mv ${file} ${file}.backup
+	if [[ -e ${file} ]]; then
+		if [[ ! -h ${file} ]]; then
+			echo "Backing up file ${file}"
+			mv -v ${file} ${file}.backup
 		fi
 	fi
 }
-# Link the file
-function link {
+
+# Create a symbolic link file that points to the source file.
+link() {
     local src=$1
     local dst=$2
-    if ! [ -h ${dst} ]; then
+    local ln_flags=-sv
+    if [[ -h ${dst} ]]; then
+        if [[ $(readlink ${dst}) == ${src} ]]; then
+            return
+        fi
+        ln_flags=-sfnv
+    fi
+    if [[ ! -e ${dst} ]]; then
         echo "Linking file ${dst}"
-        ln -sv ${src} ${dst}
+        ln ${ln_flags} ${src} ${dst}
     fi
 }
 
-# Get the current working directory
-CWD="$(cd "$(dirname "$0")" && pwd)"
-
-# install tmux.conf tmux-darwin.conf files
-for file in tmux.conf tmux-darwin.conf
+# install the files and or directories
+for file in ${file_list}
 do
-    # Backup an existing tmux configuraion file
-    backup "${HOME}/.${file}"
-
-    # Link the tmux configuration file
-    link "${CWD}/${file}" "${HOME}/.${file}"
+    backup "${HOME}/${file}"
+    link "${cwd}/${file}" "${HOME}/${file}"
 done
