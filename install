@@ -7,43 +7,42 @@
 # 2016.10.01 MRB
 # Modified to install tmux config file
 
-# list of files and or directories to install
-file_list=".tmux.conf .tmux-darwin.conf"
+# 2017.10.04 MRB
+# - Generalized install script, installs everthing under the 'home' folder into
+# the users $HOME folder.
 
-# Get the current working directory
-cwd="$(cd "$(dirname "$0")" && pwd)"
-
-# Backup a file if it exists
-backup() {
+# Backup a file/directory by renaming it with the current date and time
+backup_file() {
 	local file=$1
-	if [[ -e ${file} ]]; then
-		if [[ ! -h ${file} ]]; then
-			echo "Backing up file ${file}"
-			mv -v ${file} ${file}.backup
+	local file_ext=$(date +%Y%m%d%H%M)
+
+	if [ -e ${file} ]; then
+		if ! [ -h ${file} ]; then
+			echo "Backing up ${file} to: ${file}.${file_ext}"
+			mv ${file} ${file}.${file_ext}
 		fi
 	fi
 }
 
-# Create a symbolic link file that points to the source file.
-link() {
+# create a symbolic link if one does not allready exist
+link_file() {
     local src=$1
     local dst=$2
-    local ln_flags=-sv
-    if [[ -h ${dst} ]]; then
-        if [[ $(readlink ${dst}) == ${src} ]]; then
-            return
-        fi
-        ln_flags=-sfnv
-    fi
-    if [[ ! -e ${dst} ]]; then
+
+    if ! [ -e ${dst} ]; then
         echo "Linking file ${dst}"
-        ln ${ln_flags} ${src} ${dst}
+        ln -sfnv ${src} ${dst}
     fi
 }
 
-# install the files and or directories
-for file in ${file_list}
-do
-    backup "${HOME}/${file}"
-    link "${cwd}/${file}" "${HOME}/${file}"
+DIR="$(cd "$(dirname "$0")" && pwd)"
+pushd "${DIR}"
+
+SRC_DIR=${DIR}/home
+DST_DIR=${HOME}
+
+# Link all items in the home directory to the users home directory
+for file in $(ls -A1 "${SRC_DIR}"); do
+    backup_file ${HOME}/$file
+    link_file ${SRC_DIR}/$file ${DST_DIR}/$file
 done
