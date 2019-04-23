@@ -11,15 +11,18 @@
 # - Generalized install script, installs everthing under the 'home' folder into
 # the users $HOME folder.
 
+# 2019.04.22 MRB
+# - Misc cleanup
+
 # Backup a file/directory by renaming it with the current date and time
 backup_file() {
-	local file=$1
-	local file_ext=$(date +%Y%m%d%H%M)
+	file=$1
+	file_ext=$(date +%Y%m%d%H%M)
 
-	if [ -e ${file} ]; then
-		if ! [ -h ${file} ]; then
+	if [ -e "${file}" ]; then
+		if ! [ -h "${file}" ]; then
 			echo "Backing up ${file} to: ${file}.${file_ext}"
-			mv ${file} ${file}.${file_ext}
+			mv "${file}" "${file}.${file_ext}"
 		fi
 	fi
 }
@@ -29,20 +32,19 @@ link_file() {
     local src=$1
     local dst=$2
 
-    if ! [ -e ${dst} ]; then
+    if ! [ -e "${dst}" ]; then
         echo "Linking file ${dst}"
-        ln -sfnv ${src} ${dst}
+        ln -sfnv "${src}" "${dst}"
     fi
 }
 
+# Backup existing files and link files/dirs in the home folder into
+# the users home directory.
 DIR="$(cd "$(dirname "$0")" && pwd)"
-pushd "${DIR}"
-
-SRC_DIR=${DIR}/home
-DST_DIR=${HOME}
-
-# Link all items in the home directory to the users home directory
-for file in $(ls -A1 "${SRC_DIR}"); do
-    backup_file ${HOME}/$file
-    link_file ${SRC_DIR}/$file ${DST_DIR}/$file
+shopt -s dotglob
+for src in "${DIR}"/home/*; do
+    dst="${HOME}"/$(basename "$src")
+    backup_file "$dst"
+    link_file "$src" "$dst"
 done
+shopt -u dotglob
