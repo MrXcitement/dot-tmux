@@ -4,15 +4,15 @@
 # Mike Barker <mike@thebarkers.com>
 # May 14th, 2013
 
-# 2016.10.01 MRB
-# Modified to install tmux config file
-
+# 2023.07.23 MRB
+# - Clone the Tmux Plugin Manager (tpm) into the tmux-plugins folder
+# 2019.04.22 MRB
+# - Misc cleanup
 # 2017.10.04 MRB
 # - Generalized install script, installs everthing under the 'home' folder into
 # the users $HOME folder.
-
-# 2019.04.22 MRB
-# - Misc cleanup
+# 2016.10.01 MRB
+# Modified to install tmux config file
 
 # Backup a file/directory by renaming it with the current date and time
 backup_file() {
@@ -48,3 +48,9 @@ for src in "${DIR}"/home/*; do
     link_file "$src" "$dst"
 done
 shopt -u dotglob
+
+# Clone the Tmux Plugin Manager
+dst="${HOME}/.tmux/plugins/tpm"
+if [[ ! -d  "${dst}" ]]; then
+    git clone https://github.com/tmux-plugins/tpm "${dst}"
+fi
